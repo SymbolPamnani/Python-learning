@@ -1,9 +1,7 @@
 # Python Learning Journey
 Welcome! This repository documents my hands-on learning, experiments, and project implementations in Python for my AI/ML journey.
 
-# Topics & Contents
 ## Python Fundamentals
-
 Control flow & logic building (atm.py, chatbot.py, RockPaperSissors.py)
 Data structures & manipulations (list_dictionary.py, tuples-in-list.py)
 Password generation & urls (gen_password.py, urls.py)
@@ -17,8 +15,8 @@ File and exception handling (file-handling.py)
 Numeric operations & analysis (numpylibrary.py, student-grade-analyzer.py)
 Data visualization & reporting (data_visualization.py, weather.py)
 
-### Mini Projects
-Applied scripts & end-to-end mini applications inside Mini_Projects/ (e.g., AI Job Recommendation, domain-specific utilities)
+## Mini Projects
+Applied scripts & end-to-end mini applications inside Mini_Projects/ (eg. AI Job Recommendation, Similar-Assignment-Checker)
 
 # Learning Philosophy
 Learn → Practice → Build → Improve
