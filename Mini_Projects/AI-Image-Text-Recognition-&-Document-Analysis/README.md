@@ -57,10 +57,10 @@ The current categories include:
 ## Installation
 
 1. Clone the Repository
-git clone <your-repository-url>
+git clone https://github.com/SymbolPamnani/Python-learning/tree/main/Mini_Projects
 
 2. Navigate to the Project Directory
-cd Python-learning/Mini_Projects/AI-Image-Text-Recognition
+cd AI-Image-Text-Recognition
 
 3. Create a Virtual Environment
 python -m venv venv
