@@ -1,0 +1,77 @@
+Dataset Understanding:
+This project uses a customer churn dataset containing 1,000 customers. The target variable is Churn, where 0 represents a customer who stays and 1 represents a customer who leaves. During initial data exploration, I checked the dataset shape, data types, statistical information, and missing values. The dataset contains both numerical and categorical features, along with some missing values that will be handled later through preprocessing.
+
+Class Imbalance:
+The target variable is imbalanced: 849 customers stayed while 151 customers churned, giving approximately 84.9% class 0 and 15.1% class 1. Because of this imbalance, accuracy alone may not be a reliable measure of model performance. Later, precision, recall, F1-score, and the confusion matrix will also be considered.
+
+Data Leakage:
+I identified Cancellation_Date as a data-leakage feature. It is present only for customers whose Churn value is 1. If this feature were given to the model, it could indirectly reveal the target and produce unrealistically high performance. Therefore, features must be examined carefully to ensure they represent information that would actually be available when making a prediction.
+
+Train/Test Split:
+The dataset was divided into 80% training data and 20% testing data using train_test_split(). stratify=y was used to maintain a similar proportion of churned and non-churned customers in both sets. The test set is treated as an untouched dataset and will only be used for final evaluation after model development and selection.
+
+Feature Selection:
+Customer_ID was removed because it is only an identifier and does not provide meaningful predictive information. Cancellation_Date was also removed because it causes target leakage. The remaining columns represent information that can potentially be used to predict customer churn.
+
+Preprocessing Numerical and Categorical Features:
+The dataset contains both numerical and categorical features, so they cannot be processed in the same way. Numerical features are processed using a pipeline that first handles missing values with SimpleImputer(strategy="median") and then applies StandardScaler to scale the values. Categorical features use a separate pipeline that fills missing values with the most frequent category and then applies OneHotEncoder to convert categorical values into numerical form. These preprocessing steps are placed inside pipelines so that the same transformations can later be applied safely during training, cross-validation, and testing.
+
+Run this code. The next step will be to use ColumnTransformer to combine these two pipelines into one complete preprocessing system.
+
+So conceptually, we've built:
+
+                    X_train
+                       │
+              ┌────────┴────────┐
+              ↓                 ↓
+        Numerical            Categorical
+              │                 │
+          Imputer            Imputer
+              ↓                 ↓
+          Scaler             Encoder
+              │                 │
+              └────────┬────────┘
+                       ↓
+              Processed features
+
+Combining Preprocessing with ColumnTransformer:
+ColumnTransformer is used to apply different preprocessing strategies to different groups of features. The numerical pipeline handles numerical columns using median imputation and scaling, while the categorical pipeline handles categorical columns using most-frequent imputation and one-hot encoding. Combining them into one ColumnTransformer creates a single preprocessing object that can later be integrated with a machine-learning model. The preprocessing will be fitted using training data only so that information from the test set does not influence the training process.
+
+Logistic Regression Baseline:
+Logistic Regression was used as the first baseline model for the customer churn prediction problem. A baseline gives us a starting point that we can use to compare other models and improvements against. The model was placed inside the preprocessing Pipeline, so missing values, scaling, and categorical encoding were applied automatically before Logistic Regression was trained. The baseline achieved about 83% accuracy on the test set, but its recall for churn was very low, showing that accuracy alone does not represent the actual quality of the model for this imbalanced dataset.
+
+Evaluation Metrics:
+We evaluated the classification model using accuracy, precision, recall, and F1 score. Accuracy measures the overall percentage of correct predictions, while precision tells us how many customers predicted as churners actually churned. Recall tells us how many of the actual churners the model successfully detected. F1 score combines precision and recall into a single metric and is useful when the classes are imbalanced. For this project, recall and F1 are especially important because identifying customers who may churn is more useful than simply achieving high overall accuracy.
+
+Confusion Matrix:
+A confusion matrix shows the individual types of correct and incorrect classification predictions. It contains True Negatives (TN), False Positives (FP), False Negatives (FN), and True Positives (TP). In our churn problem, a false negative means an actual churner was predicted as a customer who would not churn. The Logistic Regression test confusion matrix was [[164, 6], [28, 2]], meaning the model correctly identified 164 non-churners and only 2 churners, while missing 28 actual churners. This helped us understand why the model's recall was very low even though its accuracy was relatively high.
+
+Cross-Validation:
+Cross-validation was used to get a more reliable estimate of how well a model generalizes to unseen data. Instead of evaluating the model using only one validation split, the training data is divided into multiple folds. The model is trained on some folds and validated on the remaining fold, and this process is repeated until every fold has been used for validation. We used 5-fold cross-validation, which produced five scores for each metric. We then calculated their mean to obtain a more stable estimate of model performance. Cross-validation was performed only on the training data so that the test set remained untouched for final evaluation.
+
+StratifiedKFold:
+StratifiedKFold was used instead of ordinary KFold because our target variable is imbalanced. Our dataset contains 849 non-churned customers and 151 churned customers, so each fold should maintain approximately the same class proportion as the complete training data. StratifiedKFold creates folds while preserving the distribution of the target classes. We used 5 folds with shuffling enabled and random_state=42 to make the splitting reproducible. This makes our cross-validation results more reliable for the churn classification problem.
+
+Comparing Logistic Regression and Decision Tree:
+We compared Logistic Regression and Decision Tree using the same 5-fold stratified cross-validation and the same evaluation metrics. Logistic Regression achieved approximately 85.5% mean accuracy, but its mean recall was only about 14.1% and its mean F1 score was about 22.5%. The Decision Tree had lower mean accuracy of about 78%, but achieved better mean recall of about 28.9% and mean F1 score of about 28.2%. This comparison showed that the model with the highest accuracy is not necessarily the best model for our problem. Since detecting churners is important, recall and F1 provide more useful information than accuracy alone.
+
+Overfitting and Underfitting with Decision Tree:
+We tested different values of max_depth to understand underfitting and overfitting in a Decision Tree. A very shallow tree can be too simple to learn useful patterns, which is called underfitting. As the depth increases, the model becomes more capable of fitting the training data. However, a very deep tree can memorize the training data instead of learning patterns that generalize to unseen data, resulting in overfitting. In our experiment, max_depth=5 produced the highest validation F1 score of approximately 0.305, so it was selected as the best depth based on cross-validation. Deeper trees such as depth 10 and an unrestricted tree achieved very high training F1 scores but did not improve validation performance, showing signs of overfitting.
+
+Model Selection Based on Validation Performance:
+The Decision Tree with max_depth=5 was selected because it achieved the highest mean validation F1 score among the tested depths. Model selection should be based on performance on validation data rather than training performance. A model that performs extremely well on training data may simply be memorizing the training examples. Cross-validation allows us to compare different model configurations more reliably before selecting the final configuration.
+
+Final Test Evaluation:
+After selecting max_depth=5, the Decision Tree was trained on the complete training set and evaluated once on the untouched test set. The final test results were 77% accuracy, 13.6% precision, 10% recall, and 11.5% F1 score. The confusion matrix was [[151, 19], [27, 3]]. The model correctly detected only 3 of the 30 actual churners, while missing 27 churners. This demonstrates why the test set must be kept separate from model selection and why accuracy alone is not sufficient for this imbalanced churn problem.
+
+Cross-Validation vs Final Test Performance:
+Cross-validation and final test evaluation serve different purposes. Cross-validation was used during model development to compare Logistic Regression, Decision Tree, and different Decision Tree depths. The test set was kept untouched until the final evaluation. Although the depth-5 Decision Tree achieved the best validation F1 score of approximately 0.305, its final test F1 score was only approximately 0.115. This difference shows that validation performance is an estimate rather than a guarantee of future performance, and it reinforces the importance of evaluating the final selected model on completely unseen data.
+
+Class Imbalance:
+The churn dataset is imbalanced, with significantly fewer churned customers than non-churned customers. This can cause a model to favor the majority class and achieve high accuracy while performing poorly at detecting churners. To address this, class_weight="balanced" was introduced for Logistic Regression and Decision Tree. This automatically gives greater weight to the minority class during training, encouraging the models to pay more attention to churn cases without artificially duplicating the data.
+
+Zero-Division Warning:
+During cross-validation, some shallow Decision Trees predicted no churn cases at all. In that situation, precision becomes mathematically undefined because there are no positive predictions. zero_division=0 was used through custom scorers to explicitly define the metric as zero instead of producing a warning. This does not hide a model problem; it simply handles the undefined metric consistently.
+
+Current Process in code:
+EDA → leakage detection → train/test split → preprocessing → pipeline → baseline → cross-validation → imbalance handling → overfitting/underfitting → model selection → final test evaluation
