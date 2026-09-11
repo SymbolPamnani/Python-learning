@@ -235,3 +235,65 @@ print("Test F1:", f1_score(y_test, test_predictions, zero_division=0))
 
 print("\nTest Confusion Matrix:")
 print(confusion_matrix(y_test, test_predictions))
+
+# Logistic Regression Threshold Analysis
+print("---------------------------------------")
+print("LOGISTIC REGRESSION THRESHOLD ANALYSIS")
+print("---------------------------------------")
+
+logistic_probabilities = logistic_model.predict_proba(X_test)[:, 1]
+
+threshold_results = []
+
+thresholds = [0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70]
+
+for threshold in thresholds:
+
+    threshold_predictions = (
+        logistic_probabilities >= threshold
+    ).astype(int)
+
+    threshold_results.append({
+        "Threshold": threshold,
+        "Precision": precision_score(
+            y_test,
+            threshold_predictions,
+            zero_division=0
+        ),
+        "Recall": recall_score(
+            y_test,
+            threshold_predictions,
+            zero_division=0
+        ),
+        "F1": f1_score(
+            y_test,
+            threshold_predictions,
+            zero_division=0
+        )
+    })
+
+
+for result in threshold_results:
+
+    print(
+        f"Threshold: {result['Threshold']:.2f} | "
+        f"Precision: {result['Precision']:.3f} | "
+        f"Recall: {result['Recall']:.3f} | "
+        f"F1: {result['F1']:.3f}"
+    )
+
+
+# Select threshold with highest F1
+
+best_threshold_result = max(threshold_results, key=lambda result: result["F1"])
+
+best_threshold = best_threshold_result["Threshold"]
+
+print("-----------------------------------")
+print("BEST LOGISTIC REGRESSION THRESHOLD")
+print("-----------------------------------")
+
+print("Best Threshold:", best_threshold)
+print("Precision:", round(best_threshold_result["Precision"], 3))
+print("Recall:", round(best_threshold_result["Recall"], 3))
+print("F1 Score:", round(best_threshold_result["F1"], 3))
