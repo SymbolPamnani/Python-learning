@@ -1,4 +1,4 @@
-# Task 2: Garment Worker Productivity Prediction & Modeling
+# Garment Worker Productivity Prediction & Modeling
 
 A machine learning project designed to analyze and predict the actual productivity of garment workers using regression techniques, detailed exploratory data analysis (EDA), hyperparameter tuning, and cross-validation.
 
@@ -51,7 +51,7 @@ All plots will be automatically generated and saved to results/plots/, and evalu
 ## 📁 Repository Structure
 
 ```text
-Task_2_Garment_Productivity/
+Garment_Productivity/
 ├── data/
 │   └── garments_worker_productivity.csv   # Source dataset
 ├── results/
