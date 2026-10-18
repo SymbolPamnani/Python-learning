@@ -1,0 +1,17 @@
+PROGREE INTERNSHIP — TASK 4 REPORT OUTLINE
+
+Title: Clinical Disease Prediction with Imbalance Handling and Recall-Focused Evaluation
+
+1. Objective
+2. Dataset description and class distribution
+3. Preprocessing and stratified train/test split
+4. Imbalance handling: SMOTE and class weights
+5. Models: SVM, Random Forest, XGBoost
+6. Cross-validation methodology (5 folds)
+7. Metrics: recall/sensitivity, precision, F1, accuracy, ROC-AUC
+8. Results table using cross_validation_results.csv and test_model_comparison.csv
+9. Confusion matrices and false-negative analysis
+10. Limitations and ethical considerations
+11. Conclusion
+
+Report carefully: the built-in breast-cancer dataset is only moderately imbalanced, not severely imbalanced. Never present this educational model as suitable for clinical diagnosis.
